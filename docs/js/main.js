@@ -3,31 +3,31 @@ window.addEventListener('load', async () => {
     if (!navigator.mediaDevices) {
         unsupported.textContent =
             'navigator.mediaDevices is not supported by this browser.';
-        unsupported.style.display = 'block';
+        unsupported.style.display = '';
         return;
     }
     if (window.BarcodeDetector == undefined) {
         unsupported.textContent =
             'BarcodeDetector is not supported by this browser.';
-        unsupported.style.display = 'block';
+        unsupported.style.display = '';
         return;
     }
-    const stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: {
-            facingMode: {
-                exact: 'environment',
-            },
-        },
-    });
-    video.srcObject = stream;
-    await new Promise(r => {
-        video.onloadedmetadata = _e => {
-            video.play();
-            r();
-        };
-    });
     try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: false,
+            video: {
+                facingMode: {
+                    exact: 'environment',
+                },
+            },
+        });
+        video.srcObject = stream;
+        await new Promise(r => {
+            video.onloadedmetadata = _e => {
+                video.play();
+                r();
+            };
+        });
         const barcodeDetector = new BarcodeDetector();
         while (true) {
             const barcodes = await barcodeDetector.detect(video);
@@ -56,6 +56,7 @@ window.addEventListener('load', async () => {
         }
     }
     catch (e) {
-        console.error(e);
+        unsupported.textContent = String(e);
+        unsupported.style.display = '';
     }
 });
