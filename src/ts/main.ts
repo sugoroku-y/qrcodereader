@@ -186,20 +186,18 @@ document.addEventListener('click', ev => {
   // 読み取り結果の一項目がクリックされたとき
   const textElement = ev.target.closest('#result__list > li') as HTMLElement;
   if (textElement) {
+    const text = textElement.getAttribute('data-text') ?? '';
     // 項目の左上の座標を取得
     const {left, top} = offset(textElement);
     // 項目のテキストを属性値に設定
-    menu.setAttribute('data-text', textElement.getAttribute('data-text') ?? '');
+    menu.setAttribute('data-text', text);
     // メニューを項目の左下に配置
     menu.style.left = `${left}px`;
     menu.style.top = `${top + textElement.offsetHeight}px`;
     // メニューを表示
     menu.classList.add('shown');
     // URLっぽいテキストでないときは「開く」をグレーアウト
-    menu__item__navigate.classList.toggle(
-      'disabled',
-      !/^\w+:/.test(textElement.textContent ?? '')
-    );
+    menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
     // デフォルトのクリックを処理しないように
     ev.preventDefault();
     ev.stopPropagation();

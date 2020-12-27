@@ -105,24 +105,25 @@ function offset(element) {
     return r;
 }
 document.addEventListener('click', ev => {
-    var _a, _b, _c;
+    var _a, _b;
     if (!(ev.target instanceof HTMLElement)) {
         return;
     }
     // 読み取り結果の一項目がクリックされたとき
     const textElement = ev.target.closest('#result__list > li');
     if (textElement) {
+        const text = (_a = textElement.getAttribute('data-text')) !== null && _a !== void 0 ? _a : '';
         // 項目の左上の座標を取得
         const { left, top } = offset(textElement);
         // 項目のテキストを属性値に設定
-        menu.setAttribute('data-text', (_a = textElement.getAttribute('data-text')) !== null && _a !== void 0 ? _a : '');
+        menu.setAttribute('data-text', text);
         // メニューを項目の左下に配置
         menu.style.left = `${left}px`;
         menu.style.top = `${top + textElement.offsetHeight}px`;
         // メニューを表示
         menu.classList.add('shown');
         // URLっぽいテキストでないときは「開く」をグレーアウト
-        menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test((_b = textElement.textContent) !== null && _b !== void 0 ? _b : ''));
+        menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
         // デフォルトのクリックを処理しないように
         ev.preventDefault();
         ev.stopPropagation();
@@ -143,7 +144,7 @@ document.addEventListener('click', ev => {
             }
             // コピーがクリックされたとき
             if (menuItem === menu__item__copy) {
-                (_c = navigator.clipboard) === null || _c === void 0 ? void 0 : _c.writeText(text);
+                (_b = navigator.clipboard) === null || _b === void 0 ? void 0 : _b.writeText(text);
                 return;
             }
         }
