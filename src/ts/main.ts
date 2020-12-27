@@ -1,3 +1,10 @@
+function assert<T extends {} | []>(
+  condition: T | null | undefined
+): asserts condition is T {
+  if (!condition) {
+    throw new Error();
+  }
+}
 
 // BarcodeDetectorのための定義・宣言 ここから
 
@@ -35,6 +42,7 @@ interface BarcodeDetector {
 
 interface BarcodeDetectorConstructor {
   new (options?: {formats: BarcodeFormat[]}): BarcodeDetector;
+  prototype: BarcodeDetector;
   getSupportedFormats(): Promise<BarcodeFormat[]>;
 }
 
@@ -47,12 +55,15 @@ declare const BarcodeDetector: BarcodeDetectorConstructor;
 // html内でID指定した要素
 declare const errormessage: HTMLDivElement;
 declare const qrcodereader__video: HTMLVideoElement;
+declare const qrcodereader__canvas: HTMLCanvasElement;
 declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
 declare const result__close: HTMLButtonElement;
 declare const menu: HTMLDivElement;
 declare const menu__item__navigate: HTMLDivElement;
 declare const menu__item__copy: HTMLDivElement;
+
+const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 
 window.addEventListener('load', async () => {
   // navigator.mediaDevicesがなければエラー
@@ -69,6 +80,9 @@ window.addEventListener('load', async () => {
     return;
   }
 
+  qrcodereader__canvas.width = qrcodereader__canvas.clientWidth;
+  qrcodereader__canvas.height = qrcodereader__canvas.clientHeight;
+
   try {
     // カメラからのストリームを取得してvideoに接続
     qrcodereader__video.srcObject = await navigator.mediaDevices.getUserMedia({
@@ -81,9 +95,6 @@ window.addEventListener('load', async () => {
     });
     // 読み込み完了を待つ
     await new Promise<void>(r =>
-     
-     
-     
       qrcodereader__video.addEventListener('loadedmetadata', () => r())
     );
     // 再生開始
@@ -105,25 +116,39 @@ window.addEventListener('load', async () => {
       while (result__list.firstChild) {
         result__list.removeChild(result__list.firstChild);
       }
+      const ctx = qrcodereader__canvas.getContext('2d');
+      assert(ctx);
+      ctx.clearRect(
+        0,
+        0,
+        qrcodereader__canvas.width,
+        qrcodereader__canvas.height
+      );
+      let index = 0;
       // 今回の読み取り結果を反映
       for (let barcode of barcodes) {
         const value = barcode.rawValue;
         const li = document.createElement('li');
         li.appendChild(document.createTextNode(value));
         result__list.appendChild(li);
+        ctx.strokeStyle = colors[index % colors.length];
+        ctx.beginPath();
+        (({x, y}) => ctx.moveTo(x, y))(barcode.cornerPoints[0]);
+        barcode.cornerPoints.slice(1).forEach(({x, y}) => ctx.lineTo(x, y));
+        ctx.stroke();
       }
       // 読み取り結果を表示
       result.classList.add('shown');
       // 読み取り結果の閉じるボタンがクリックされるまで待機
       await new Promise<void>(r => {
         result__close.addEventListener('click', function handler() {
-          // クリックされたら読み取り結果を非表示
-          result.classList.remove('shown');
           r();
           // クリックハンドラを解除
           result__close.removeEventListener('click', handler);
         });
       });
+      // クリックされたら読み取り結果を非表示
+      result.classList.remove('shown');
       // 再生再開
       await qrcodereader__video.play();
     }

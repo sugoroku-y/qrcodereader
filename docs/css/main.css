@@ -6,12 +6,16 @@ body {
 body {
   background-color: gray; }
 
-.result__list__item.hidden {
-  display: none; }
-
 video {
   max-width: 100vw;
   max-height: 100vh; }
+
+#qrcodereader__canvas {
+  position: relative;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0; }
 
 #result {
   display: none; }
