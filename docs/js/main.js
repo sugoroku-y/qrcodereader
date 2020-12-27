@@ -62,6 +62,7 @@ window.addEventListener('load', async () => {
                 li.appendChild(document.createTextNode(value));
                 result__list.appendChild(li);
                 ctx.strokeStyle = colors[index % colors.length];
+                ctx.lineWidth = 3;
                 ctx.beginPath();
                 (({ x, y }) => ctx.moveTo(x, y))(barcode.cornerPoints[0]);
                 barcode.cornerPoints.slice(1).forEach(({ x, y }) => ctx.lineTo(x, y));
