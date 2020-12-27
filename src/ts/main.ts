@@ -68,16 +68,16 @@ window.addEventListener('load', async () => {
         },
       },
     });
-    video.srcObject = stream;
+    qrcodereader__video.srcObject = stream;
     await new Promise<void>(r => {
-      video.onloadedmetadata = _e => {
-        video.play();
+      qrcodereader__video.onloadedmetadata = _e => {
+        qrcodereader__video.play();
         r();
       };
     });
     const barcodeDetector = new BarcodeDetector();
     while (true) {
-      const barcodes = await barcodeDetector.detect(video);
+      const barcodes = await barcodeDetector.detect(qrcodereader__video);
       if (!barcodes.length) {
         await new Promise(r => setTimeout(r, 200));
         continue;
