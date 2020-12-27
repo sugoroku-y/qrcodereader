@@ -53,6 +53,14 @@ window.addEventListener('load', async () => {
                 li.appendChild(content);
                 result__list.appendChild(li);
             }
+            result.classList.add('shown');
+            await new Promise(r => {
+                result__close.addEventListener('click', function handler() {
+                    result.classList.remove('shown');
+                    r();
+                    result__close.removeEventListener('click', handler);
+                });
+            });
         }
     }
     catch (e) {

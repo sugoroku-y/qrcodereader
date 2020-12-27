@@ -42,7 +42,9 @@ declare const BarcodeDetector: BarcodeDetectorConstructor;
 
 declare const unsupported: HTMLDivElement;
 declare const qrcodereader__video: HTMLVideoElement;
+declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
+declare const result__close: HTMLButtonElement;
 
 window.addEventListener('load', async () => {
   if (!navigator.mediaDevices) {
@@ -100,6 +102,14 @@ window.addEventListener('load', async () => {
         li.appendChild(content);
         result__list.appendChild(li);
       }
+      result.classList.add('shown');
+      await new Promise<void>(r => {
+        result__close.addEventListener('click', function handler() {
+          result.classList.remove('shown');
+          r();
+          result__close.removeEventListener('click', handler);
+        });
+      });
     }
   } catch (e) {
     unsupported.textContent = String(e);
