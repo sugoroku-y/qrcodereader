@@ -79,10 +79,6 @@ window.addEventListener('load', async () => {
       'BarcodeDetector is not supported by this browser.';
     return;
   }
-
-  qrcodereader__canvas.width = qrcodereader__canvas.clientWidth;
-  qrcodereader__canvas.height = qrcodereader__canvas.clientHeight;
-
   try {
     // カメラからのストリームを取得してvideoに接続
     qrcodereader__video.srcObject = await navigator.mediaDevices.getUserMedia({
@@ -101,6 +97,10 @@ window.addEventListener('load', async () => {
     await qrcodereader__video.play();
     // バーコード読み取り機能の準備
     const barcodeDetector = new BarcodeDetector();
+
+    qrcodereader__canvas.width = qrcodereader__canvas.clientWidth;
+    qrcodereader__canvas.height = qrcodereader__canvas.clientHeight;
+
     while (true) {
       // バーコード読み取り
       const barcodes = await barcodeDetector.detect(qrcodereader__video);
@@ -164,7 +164,8 @@ window.addEventListener('load', async () => {
       });
       // クリックされたら読み取り結果を非表示
       result.classList.remove('shown');
-      // 再生再開
+      ctx.clearRect(0, 0, width, height);
+     // 再生再開
       await qrcodereader__video.play();
     }
   } catch (e) {
