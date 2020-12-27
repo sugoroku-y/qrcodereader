@@ -25,6 +25,8 @@ video {
     flex-direction: column;
     align-items: flex-start;
     border-radius: 10px;
+    background-color: white;
+    color: black;
   }
   &__close {
     align-self: flex-end;
