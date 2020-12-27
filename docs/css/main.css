@@ -11,7 +11,7 @@ video {
   max-height: 100vh; }
 
 #qrcodereader__canvas {
-  position: relative;
+  position: absolute;
   left: 0;
   top: 0;
   right: 0;
