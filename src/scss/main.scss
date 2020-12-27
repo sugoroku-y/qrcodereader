@@ -3,6 +3,9 @@ body {
   padding: 0;
   margin: 0;
 }
+body {
+  background-color: gray;
+}
 
 .result__list__item.hidden {
   display: none;
@@ -47,5 +50,45 @@ video {
     top: 10%;
     right: 10%;
     padding: 10px;
+  }
+}
+
+#menu {
+  display: none;
+  &.shown {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    position: absolute;
+    background-color: #e0e0e0;
+    color: black;
+    border-radius: 10px;
+    user-select: none;
+  }
+  > div {
+    padding: 10px;
+    &:not(:last-of-type) {
+      border-bottom: 1px solid #101010;
+    }
+    &:first-of-type {
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+    }
+    &:last-of-type {
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+    }
+    &:hover {
+      background-color: #d0d0d0;
+    }
+    &:active {
+      background-color: #f0f0f0;
+    }
+    &.disabled {
+      pointer-events: none;
+      color: #808080;
+      background-color: #c0c0c0
+    }
   }
 }
