@@ -129,7 +129,14 @@ window.addEventListener('load', async () => {
       for (let barcode of barcodes) {
         const value = barcode.rawValue;
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(value));
+        li.appendChild(
+          document.createTextNode(
+            `${value}: ${barcode.cornerPoints
+              .map(({x, y}) => `(${x}, ${y})`)
+              .join(' - ')}`
+          )
+        );
+        li.setAttribute('data-text', value);
         result__list.appendChild(li);
         ctx.strokeStyle = colors[index % colors.length];
         ctx.lineWidth = 3;
@@ -182,7 +189,7 @@ document.addEventListener('click', ev => {
     // 項目の左上の座標を取得
     const {left, top} = offset(textElement);
     // 項目のテキストを属性値に設定
-    menu.setAttribute('data-text', textElement.textContent ?? '');
+    menu.setAttribute('data-text', textElement.getAttribute('data-text') ?? '');
     // メニューを項目の左下に配置
     menu.style.left = `${left}px`;
     menu.style.top = `${top + textElement.offsetHeight}px`;
