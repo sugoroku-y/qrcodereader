@@ -33,3 +33,19 @@ video {
     align-self: flex-end;
   }
 }
+
+#errormessage {
+  display: none;
+  &:not(:empty) {
+    display: block;
+    color: white;
+    background-color: red;
+    border-radius: 10px;
+    font-weight: bold;
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    right: 10%;
+    padding: 10px;
+  }
+}

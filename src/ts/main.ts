@@ -40,7 +40,7 @@ interface Window {
 }
 declare const BarcodeDetector: BarcodeDetectorConstructor;
 
-declare const unsupported: HTMLDivElement;
+declare const errormessage: HTMLDivElement;
 declare const qrcodereader__video: HTMLVideoElement;
 declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
@@ -48,16 +48,14 @@ declare const result__close: HTMLButtonElement;
 
 window.addEventListener('load', async () => {
   if (!navigator.mediaDevices) {
-    unsupported.textContent =
+    errormessage.textContent =
       'navigator.mediaDevices is not supported by this browser.';
-    unsupported.style.display = '';
     return;
   }
 
   if (window.BarcodeDetector == undefined) {
-    unsupported.textContent =
+    errormessage.textContent =
       'BarcodeDetector is not supported by this browser.';
-    unsupported.style.display = '';
     return;
   }
 
@@ -112,7 +110,6 @@ window.addEventListener('load', async () => {
       });
     }
   } catch (e) {
-    unsupported.textContent = String(e);
-    unsupported.style.display = '';
+    errormessage.textContent = String(e);
   }
 });
