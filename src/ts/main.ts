@@ -41,7 +41,7 @@ interface Window {
 declare const BarcodeDetector: BarcodeDetectorConstructor;
 
 declare const unsupported: HTMLDivElement;
-declare const video: HTMLVideoElement;
+declare const qrcodereader__video: HTMLVideoElement;
 declare const result__list: HTMLUListElement;
 
 window.addEventListener('load', async () => {
