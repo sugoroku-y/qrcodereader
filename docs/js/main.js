@@ -38,6 +38,8 @@ window.addEventListener('load', async () => {
                 await new Promise(r => setTimeout(r, 200));
                 continue;
             }
+            // 一旦再生を停止
+            qrcodereader__video.pause();
             // 一旦前回の読み取り結果を削除
             while (result__list.firstChild) {
                 result__list.removeChild(result__list.firstChild);
@@ -61,6 +63,8 @@ window.addEventListener('load', async () => {
                     result__close.removeEventListener('click', handler);
                 });
             });
+            // 再生再開
+            await qrcodereader__video.play();
         }
     }
     catch (e) {
