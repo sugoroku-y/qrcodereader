@@ -53,7 +53,11 @@ window.addEventListener('load', async () => {
             }
             const ctx = qrcodereader__canvas.getContext('2d');
             assert(ctx);
-            ctx.clearRect(0, 0, qrcodereader__canvas.width, qrcodereader__canvas.height);
+            const { width, height } = qrcodereader__canvas;
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = 'white';
+            ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.45, 0, 0, 2 * Math.PI);
+            result.firstElementChild.textContent = `${width},${height}`;
             let index = 0;
             // 今回の読み取り結果を反映
             for (let barcode of barcodes) {
