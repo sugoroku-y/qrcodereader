@@ -86,7 +86,7 @@ window.addEventListener('load', async () => {
     catch (e) {
         errormessage.textContent = String(e);
     }
-    result__list.addEventListener('click', async (ev) => {
+    result__list.addEventListener('click', ev => {
         var _a;
         // 読み取り結果の一項目がクリックされたとき
         const textElement = ev.target instanceof HTMLElement &&
