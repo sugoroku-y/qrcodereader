@@ -139,13 +139,7 @@ window.addEventListener('load', async () => {
       for (let barcode of barcodes) {
         const value = barcode.rawValue;
         const li = document.createElement('li');
-        li.appendChild(
-          document.createTextNode(
-            `${value}: ${barcode.cornerPoints
-              .map(({x, y}) => `(${x}, ${y})`)
-              .join(' - ')}`
-          )
-        );
+        li.appendChild(document.createTextNode(value));
         li.setAttribute('data-text', value);
         result__list.appendChild(li);
       }
