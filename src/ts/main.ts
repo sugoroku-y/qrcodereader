@@ -58,9 +58,6 @@ declare const qrcodereader__video: HTMLVideoElement;
 declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
 declare const result__close: HTMLButtonElement;
-declare const menu: HTMLDivElement;
-declare const menu__item__navigate: HTMLDivElement;
-declare const menu__item__copy: HTMLDivElement;
 
 function click<E extends HTMLElement>(selector: string): Promise<E | undefined>;
 function click<E extends HTMLElement>(selector: HTMLElement): Promise<void>;
@@ -168,40 +165,10 @@ window.addEventListener('load', async () => {
     ev.preventDefault();
     ev.stopPropagation();
     ev.stopImmediatePropagation();
-    // 選択した項目の読み取った文字列を取得
-    const text = textElement.getAttribute('data-text') ?? '';
-    // 既に選択状態の項目があれば解除
-    for (const li of result__list.querySelectorAll('li[data-selected]')) {
-      li.removeAttribute('data-selected');
-    }
-    // 選択項目を設定
-    textElement.setAttribute('data-selected', 'true');
-    // クリック位置を取得
-    const left = ev.pageX,
-      top = ev.pageY;
-    // メニューを項目の左下に配置
-    menu.style.left = `${left}px`;
-    menu.style.top = `${top}px`;
-    // URLっぽいテキストでないときは「開く」をグレーアウト
-    menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
-    // メニューを表示
-    menu.classList.add('shown');
-    const menuItem = await click('#menu > div');
-    // メニューの項目がクリックされたとき
-    switch (menuItem) {
-      // 開くがクリックされたとき
-      case menu__item__navigate:
-        location.href = text;
-        break;
-      // コピーがクリックされたとき
-      case menu__item__copy:
-        navigator.clipboard?.writeText(text);
-        break;
-    }
-    // メニューを閉じて、選択状態を解除
-    menu.classList.remove('shown');
-    for (const li of result__list.querySelectorAll('li[data-selected]')) {
-      li.removeAttribute('data-selected');
-    }
+    // 文字列を選択する
+    const textNode = textElement.firstChild as Text;
+    window
+      .getSelection()
+      ?.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
   });
 });
