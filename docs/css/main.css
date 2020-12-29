@@ -33,7 +33,8 @@ video {
     border-radius: 10px;
     background-color: white;
     color: black;
-    word-break: break-all; }
+    word-break: break-all;
+    opacity: .5; }
   #result__close {
     align-self: flex-end; }
 
