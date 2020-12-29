@@ -37,6 +37,8 @@ video {
     opacity: .5; }
   #result__close {
     align-self: flex-end; }
+  #result__list > li {
+    user-select: all; }
 
 #errormessage {
   display: none; }

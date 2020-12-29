@@ -86,21 +86,4 @@ window.addEventListener('load', async () => {
     catch (e) {
         errormessage.textContent = String(e);
     }
-    result__list.addEventListener('click', ev => {
-        var _a;
-        // 読み取り結果の一項目がクリックされたとき
-        const textElement = ev.target instanceof HTMLElement &&
-            ev.target.closest('li');
-        if (!textElement) {
-            return;
-        }
-        // デフォルトのクリックを処理しないように
-        ev.preventDefault();
-        ev.stopPropagation();
-        ev.stopImmediatePropagation();
-        // 文字列を選択する
-        const textNode = textElement.firstChild;
-        (_a = window
-            .getSelection()) === null || _a === void 0 ? void 0 : _a.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
-    });
 });

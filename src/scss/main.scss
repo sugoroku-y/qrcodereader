@@ -42,6 +42,9 @@ video {
   &__close {
     align-self: flex-end;
   }
+  &__list > li {
+    user-select: all;
+  }
 }
 
 #errormessage {
