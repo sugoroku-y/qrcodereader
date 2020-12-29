@@ -152,6 +152,7 @@ window.addEventListener('load', async () => {
         0,
         2 * Math.PI
       );
+      ctx.stroke();
       result.firstElementChild!.textContent = `${width},${height}`;
       let index = 0;
       // 今回の読み取り結果を反映

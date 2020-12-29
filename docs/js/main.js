@@ -72,6 +72,7 @@ window.addEventListener('load', async () => {
             ctx.clearRect(0, 0, width, height);
             ctx.strokeStyle = 'red';
             ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.45, 0, 0, 2 * Math.PI);
+            ctx.stroke();
             result.firstElementChild.textContent = `${width},${height}`;
             let index = 0;
             // 今回の読み取り結果を反映
