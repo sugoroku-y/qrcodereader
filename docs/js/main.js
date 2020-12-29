@@ -51,14 +51,10 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         result.classList.add('stopped');
         qrcodereader__video.pause();
     });
-    ;
-    ;
     result__resume.addEventListener('click', () => {
-        result.classList.remove('stopped');
+        result.classList.remove('shown', 'stopped');
         qrcodereader__video.play();
     });
-    ;
-    ;
     try {
         // カメラからのストリームを取得してvideoに接続
         qrcodereader__video.srcObject = await navigator.mediaDevices.getUserMedia({
@@ -87,7 +83,9 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
                 // バーコードがなければ読み取り結果を3秒後に非表示にする
                 if (result.classList.contains('shown') && !hideTimer) {
                     hideTimer = setTimeout(() => {
-                        result.classList.remove('shown');
+                        if (!qrcodereader__video.paused) {
+                            result.classList.remove('shown');
+                        }
                         hideTimer = 0;
                     }, 3000);
                 }
