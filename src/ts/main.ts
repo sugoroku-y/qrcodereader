@@ -172,6 +172,7 @@ window.addEventListener('load', async () => {
         ctx.beginPath();
         (({x, y}) => ctx.moveTo(x, y))(barcode.cornerPoints[0]);
         barcode.cornerPoints.slice(1).forEach(({x, y}) => ctx.lineTo(x, y));
+        ctx.closePath();
         ctx.stroke();
       }
       // 読み取り結果を表示
