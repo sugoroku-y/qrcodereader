@@ -75,6 +75,7 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         await qrcodereader__video.play();
         // バーコード読み取り機能の準備
         const barcodeDetector = new BarcodeDetector();
+        let hideTimer = 0;
         while (true) {
             if (qrcodereader__video.paused) {
                 await forEvent(qrcodereader__video, 'play');
@@ -83,11 +84,21 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
             const barcodes = await barcodeDetector.detect(qrcodereader__video);
             // バーコードが読み取れなかったら空の配列が返る
             if (!barcodes.length) {
-                // バーコードがなければ読み取り結果を非表示にする
-                result.classList.remove('shown');
+                // バーコードがなければ読み取り結果を3秒後に非表示にする
+                if (result.classList.contains('shown') && !hideTimer) {
+                    hideTimer = setTimeout(() => {
+                        result.classList.remove('shown');
+                        hideTimer = 0;
+                    }, 3000);
+                }
                 // 0.2秒待機してもう一度
                 await timeout(200);
                 continue;
+            }
+            // バーコードがあれば非表示タイマーを解除
+            if (hideTimer) {
+                clearTimeout(hideTimer);
+                hideTimer = 0;
             }
             // 一旦前回の読み取り結果を削除
             while (result__list.firstChild) {
