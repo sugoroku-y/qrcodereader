@@ -55,7 +55,6 @@ declare const BarcodeDetector: BarcodeDetectorConstructor;
 // html内でID指定した要素
 declare const errormessage: HTMLDivElement;
 declare const qrcodereader__video: HTMLVideoElement;
-declare const qrcodereader__canvas: HTMLCanvasElement;
 declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
 declare const result__close: HTMLButtonElement;
@@ -120,9 +119,6 @@ window.addEventListener('load', async () => {
     // バーコード読み取り機能の準備
     const barcodeDetector = new BarcodeDetector();
 
-    qrcodereader__canvas.width = qrcodereader__canvas.clientWidth;
-    qrcodereader__canvas.height = qrcodereader__canvas.clientHeight;
-
     while (true) {
       // バーコード読み取り
       const barcodes = await barcodeDetector.detect(qrcodereader__video);
@@ -138,26 +134,6 @@ window.addEventListener('load', async () => {
       while (result__list.firstChild) {
         result__list.removeChild(result__list.firstChild);
       }
-      const ctx = qrcodereader__canvas.getContext('2d');
-      assert(ctx);
-      const {width, height} = qrcodereader__canvas;
-      ctx.clearRect(0, 0, width, height);
-      ctx.beginPath();
-      let i = 0;
-      for (let x = 0; x < width; x += 10) {
-        ctx.strokeStyle = colors[i++];
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-      }
-      i = 0;
-      for (let y = 0; y < height; y += 10) {
-        ctx.strokeStyle = colors[i++];
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
-      }
-      result.firstElementChild!.textContent = `${width},${height}`;
       let index = 0;
       // 今回の読み取り結果を反映
       for (let barcode of barcodes) {
@@ -172,15 +148,6 @@ window.addEventListener('load', async () => {
         );
         li.setAttribute('data-text', value);
         result__list.appendChild(li);
-        ctx.strokeStyle = colors[index % colors.length];
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        (({x, y}) => ctx.moveTo(x * 0.85, y * 0.85))(barcode.cornerPoints[0]);
-        barcode.cornerPoints
-          .slice(1)
-          .forEach(({x, y}) => ctx.lineTo(x * 0.85, y * 0.85));
-        ctx.closePath();
-        ctx.stroke();
       }
       // 読み取り結果を表示
       result.classList.add('shown');
@@ -188,60 +155,59 @@ window.addEventListener('load', async () => {
       await click(result__close);
       // クリックされたら読み取り結果を非表示
       result.classList.remove('shown');
-      ctx.clearRect(0, 0, width, height);
       // 再生再開
       await qrcodereader__video.play();
     }
   } catch (e) {
     errormessage.textContent = String(e);
   }
-});
 
-document.addEventListener('click', async ev => {
-  // 読み取り結果の一項目がクリックされたとき
-  const textElement =
-    ev.target instanceof HTMLElement &&
-    (ev.target.closest('#result__list > li') as HTMLElement);
-  if (!textElement) {
-    return;
-  }
-  // デフォルトのクリックを処理しないように
-  ev.preventDefault();
-  ev.stopPropagation();
-  ev.stopImmediatePropagation();
-  // 選択した項目の読み取った文字列を取得
-  const text = textElement.getAttribute('data-text') ?? '';
-  // 既に選択状態の項目があれば解除
-  for (const li of result__list.querySelectorAll('li[data-selected]')) {
-    li.removeAttribute('data-selected');
-  }
-  // 選択項目を設定
-  textElement.setAttribute('data-selected', 'true');
-  // クリック位置を取得
-  const left = ev.pageX,
-    top = ev.pageY;
-  // メニューを項目の左下に配置
-  menu.style.left = `${left}px`;
-  menu.style.top = `${top}px`;
-  // URLっぽいテキストでないときは「開く」をグレーアウト
-  menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
-  // メニューを表示
-  menu.classList.add('shown');
-  const menuItem = await click('#menu > div');
-  // メニューの項目がクリックされたとき
-  switch (menuItem) {
-    // 開くがクリックされたとき
-    case menu__item__navigate:
-      location.href = text;
-      break;
-    // コピーがクリックされたとき
-    case menu__item__copy:
-      navigator.clipboard?.writeText(text);
-      break;
-  }
-  // メニューを閉じて、選択状態を解除
-  menu.classList.remove('shown');
-  for (const li of result__list.querySelectorAll('li[data-selected]')) {
-    li.removeAttribute('data-selected');
-  }
+  result__list.addEventListener('click', async ev => {
+    // 読み取り結果の一項目がクリックされたとき
+    const textElement =
+      ev.target instanceof HTMLElement &&
+      (ev.target.closest('li') as HTMLElement);
+    if (!textElement) {
+      return;
+    }
+    // デフォルトのクリックを処理しないように
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    // 選択した項目の読み取った文字列を取得
+    const text = textElement.getAttribute('data-text') ?? '';
+    // 既に選択状態の項目があれば解除
+    for (const li of result__list.querySelectorAll('li[data-selected]')) {
+      li.removeAttribute('data-selected');
+    }
+    // 選択項目を設定
+    textElement.setAttribute('data-selected', 'true');
+    // クリック位置を取得
+    const left = ev.pageX,
+      top = ev.pageY;
+    // メニューを項目の左下に配置
+    menu.style.left = `${left}px`;
+    menu.style.top = `${top}px`;
+    // URLっぽいテキストでないときは「開く」をグレーアウト
+    menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
+    // メニューを表示
+    menu.classList.add('shown');
+    const menuItem = await click('#menu > div');
+    // メニューの項目がクリックされたとき
+    switch (menuItem) {
+      // 開くがクリックされたとき
+      case menu__item__navigate:
+        location.href = text;
+        break;
+      // コピーがクリックされたとき
+      case menu__item__copy:
+        navigator.clipboard?.writeText(text);
+        break;
+    }
+    // メニューを閉じて、選択状態を解除
+    menu.classList.remove('shown');
+    for (const li of result__list.querySelectorAll('li[data-selected]')) {
+      li.removeAttribute('data-selected');
+    }
+  });
 });
