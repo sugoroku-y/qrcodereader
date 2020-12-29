@@ -153,3 +153,24 @@ window.addEventListener('load', async () => {
     errormessage.textContent = String(e);
   }
 });
+
+window.addEventListener('load', () => {
+  result__list.addEventListener('click', ev => {
+    // 読み取り結果の一項目がクリックされたとき
+    const textElement =
+      ev.target instanceof HTMLElement &&
+      (ev.target.closest('li') as HTMLElement);
+    if (!textElement) {
+      return;
+    }
+    // デフォルトのクリックを処理しないように
+    ev.preventDefault();
+    ev.stopPropagation();
+    ev.stopImmediatePropagation();
+    // 文字列を選択する
+    const textNode = textElement.firstChild as Text;
+    window
+      .getSelection()
+      ?.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
+  });
+});
