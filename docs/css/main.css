@@ -35,7 +35,13 @@ video {
     color: black;
     word-break: break-all;
     opacity: .5; }
-  #result__close {
+  #result.stopped #result__stop {
+    display: none; }
+  #result__resume {
+    display: none; }
+    #result.stopped #result__resume {
+      display: block; }
+  #result__stop, #result__resume {
     align-self: flex-end; }
   #result__list > li {
     user-select: all; }

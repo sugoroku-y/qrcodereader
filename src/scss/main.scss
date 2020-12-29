@@ -39,7 +39,18 @@ video {
     word-break: break-all;
     opacity: .5;
   }
-  &__close {
+  &__stop {
+    #result.stopped & {
+      display: none;
+    }
+  }
+  &__resume {
+    display: none;
+    #result.stopped & {
+      display: block;
+    }
+  }
+  &__stop, &__resume {
     align-self: flex-end;
   }
   &__list > li {
