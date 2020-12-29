@@ -63,6 +63,28 @@ declare const menu: HTMLDivElement;
 declare const menu__item__navigate: HTMLDivElement;
 declare const menu__item__copy: HTMLDivElement;
 
+function click<E extends HTMLElement>(selector: string): Promise<E | undefined>;
+function click<E extends HTMLElement>(selector: HTMLElement): Promise<void>;
+function click<E extends HTMLElement>(
+  selector: string | HTMLElement
+): Promise<E | undefined> {
+  const [target, getResolve] =
+    typeof selector === 'string'
+      ? [
+          document,
+          (e: unknown) =>
+            (e instanceof HTMLElement && (e.closest(selector) as E)) ||
+            undefined,
+        ]
+      : [selector, () => undefined];
+  return new Promise<E | undefined>(resolve => {
+    target.addEventListener('click', function handler(ev) {
+      target.removeEventListener('click', handler);
+      resolve(getResolve(ev.target));
+    });
+  });
+}
+
 const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 
 window.addEventListener('load', async () => {
@@ -120,7 +142,7 @@ window.addEventListener('load', async () => {
       assert(ctx);
       const {width, height} = qrcodereader__canvas;
       ctx.clearRect(0, 0, width, height);
-      ctx.strokeStyle = 'white';
+      ctx.strokeStyle = 'red';
       ctx.ellipse(
         width / 2,
         height / 2,
@@ -155,17 +177,11 @@ window.addEventListener('load', async () => {
       // 読み取り結果を表示
       result.classList.add('shown');
       // 読み取り結果の閉じるボタンがクリックされるまで待機
-      await new Promise<void>(r => {
-        result__close.addEventListener('click', function handler() {
-          r();
-          // クリックハンドラを解除
-          result__close.removeEventListener('click', handler);
-        });
-      });
+      await click(result__close);
       // クリックされたら読み取り結果を非表示
       result.classList.remove('shown');
       ctx.clearRect(0, 0, width, height);
-     // 再生再開
+      // 再生再開
       await qrcodereader__video.play();
     }
   } catch (e) {
@@ -173,63 +189,51 @@ window.addEventListener('load', async () => {
   }
 });
 
-/**
- * body要素左上からの位置を取得
- * @param element 
- */
-function offset(element: HTMLElement) {
-  const r = {left: 0, top: 0};
-  while (element) {
-    r.left += element.offsetLeft;
-    r.top += element.offsetTop;
-    element = element.offsetParent as HTMLElement;
-  }
-  return r;
-}
-
-document.addEventListener('click', ev => {
-  if (!(ev.target instanceof HTMLElement)) {
-    return;
-  }
+document.addEventListener('click', async ev => {
   // 読み取り結果の一項目がクリックされたとき
-  const textElement = ev.target.closest('#result__list > li') as HTMLElement;
-  if (textElement) {
-    const text = textElement.getAttribute('data-text') ?? '';
-    // 項目の左上の座標を取得
-    const {left, top} = offset(textElement);
-    // 項目のテキストを属性値に設定
-    menu.setAttribute('data-text', text);
-    // メニューを項目の左下に配置
-    menu.style.left = `${left}px`;
-    menu.style.top = `${top + textElement.offsetHeight}px`;
-    // メニューを表示
-    menu.classList.add('shown');
-    // URLっぽいテキストでないときは「開く」をグレーアウト
-    menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
-    // デフォルトのクリックを処理しないように
-    ev.preventDefault();
-    ev.stopPropagation();
-    ev.stopImmediatePropagation();
+  const textElement =
+    ev.target instanceof HTMLElement &&
+    (ev.target.closest('#result__list > li') as HTMLElement);
+  if (!textElement) {
     return;
   }
-  // 読み取り結果の一項目以外のところがクリックされたら、メニューを閉じる
-  menu.classList.remove('shown');
-
+  // デフォルトのクリックを処理しないように
+  ev.preventDefault();
+  ev.stopPropagation();
+  ev.stopImmediatePropagation();
+  // 選択した項目の読み取った文字列を取得
+  const text = textElement.getAttribute('data-text') ?? '';
+  // 既に選択状態の項目があれば解除
+  for (const li of result__list.querySelectorAll('li[data-selected]')) {
+    li.removeAttribute('data-selected');
+  }
+  // 選択項目を設定
+  textElement.setAttribute('data-selected', 'true');
+  // クリック位置を取得
+  const left = ev.pageX,
+    top = ev.pageY;
+  // メニューを項目の左下に配置
+  menu.style.left = `${left}px`;
+  menu.style.top = `${top}px`;
+  // URLっぽいテキストでないときは「開く」をグレーアウト
+  menu__item__navigate.classList.toggle('disabled', !/^\w+:/.test(text));
+  // メニューを表示
+  menu.classList.add('shown');
+  const menuItem = await click('#menu > div');
   // メニューの項目がクリックされたとき
-  const menuItem = ev.target.closest('#menu > div');
-  if (menuItem) {
-    const text = menu.getAttribute('data-text');
-    if (text) {
-      // 開くがクリックされたとき
-      if (menuItem === menu__item__navigate) {
-        location.href = text;
-        return;
-      }
-      // コピーがクリックされたとき
-      if (menuItem === menu__item__copy) {
-        navigator.clipboard?.writeText(text);
-        return;
-      }
-    }
+  switch (menuItem) {
+    // 開くがクリックされたとき
+    case menu__item__navigate:
+      location.href = text;
+      break;
+    // コピーがクリックされたとき
+    case menu__item__copy:
+      navigator.clipboard?.writeText(text);
+      break;
+  }
+  // メニューを閉じて、選択状態を解除
+  menu.classList.remove('shown');
+  for (const li of result__list.querySelectorAll('li[data-selected]')) {
+    li.removeAttribute('data-selected');
   }
 });
