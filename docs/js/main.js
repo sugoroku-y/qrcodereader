@@ -70,9 +70,21 @@ window.addEventListener('load', async () => {
             assert(ctx);
             const { width, height } = qrcodereader__canvas;
             ctx.clearRect(0, 0, width, height);
-            ctx.strokeStyle = 'red';
-            ctx.ellipse(width / 2, height / 2, width * 0.45, height * 0.45, 0, 0, 2 * Math.PI);
-            ctx.stroke();
+            ctx.beginPath();
+            let i = 0;
+            for (let x = 0; x < width; x += 10) {
+                ctx.strokeStyle = colors[i++];
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            i = 0;
+            for (let y = 0; y < height; y += 10) {
+                ctx.strokeStyle = colors[i++];
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
             result.firstElementChild.textContent = `${width},${height}`;
             let index = 0;
             // 今回の読み取り結果を反映
