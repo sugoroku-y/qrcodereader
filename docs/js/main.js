@@ -75,6 +75,8 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         while (true) {
             if (qrcodereader__video.paused) {
                 await forEvent(qrcodereader__video, 'play');
+                // 再開すぐに読み取り開始すると前回の画像が残っているかも知れないのでちょっと待つ
+                await timeout(200);
             }
             // バーコード読み取り
             const barcodes = await barcodeDetector.detect(qrcodereader__video);
