@@ -5,11 +5,11 @@ ctx.addEventListener('install', event => {
     (async () => {
       const cache = await caches.open('qrcode-caches');
       await cache.addAll([
-        '../',
-        '../index.html',
-        '../js/main.js',
-        '../css/main.css',
-        '../js/sw.js',
+        './',
+        './index.html',
+        './main.js',
+        './main.css',
+        './sw.js',
       ]);
     })()
   );

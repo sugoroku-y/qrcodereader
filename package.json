@@ -2,7 +2,7 @@
   "private": true,
   "scripts": {
     "watch:ts": "tsc --build src/ts/tsconfig.json --watch",
-    "watch:scss": "node-sass src/scss/main.scss --output docs/css --watch",
+    "watch:scss": "node-sass src/scss/main.scss --output docs --watch",
     "watch": "run-p watch:*"
   },
   "devDependencies": {
