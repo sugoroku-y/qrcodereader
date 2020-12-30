@@ -95,8 +95,8 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
     return;
   }
 
+  // 読み取り結果の一項目がクリックされたとき
   result__list.addEventListener('click', ev => {
-    // 読み取り結果の一項目がクリックされたとき
     const textElement =
       ev.target instanceof HTMLElement &&
       (ev.target.closest('li') as HTMLElement);
@@ -113,15 +113,17 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
       .getSelection()
       ?.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
   });
-
+  // 停止ボタンが押されたとき
   result__stop.addEventListener('click', () => {
     result.classList.add('stopped');
     qrcodereader__video.pause();
   });
+  // 再開ボタンが押されたとき
   result__resume.addEventListener('click', () => {
     result.classList.remove('shown', 'stopped');
     qrcodereader__video.play();
   });
+
   try {
     // カメラからのストリームを取得してvideoに接続
     qrcodereader__video.srcObject = await navigator.mediaDevices.getUserMedia({
@@ -141,6 +143,7 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 
     let hideTimer: number = 0;
     while (true) {
+      // 停止中なら再開されるまで待つ
       if (qrcodereader__video.paused) {
         await forEvent(qrcodereader__video, 'play');
         // 再開すぐに読み取り開始すると前回の画像が残っているかも知れないのでちょっと待つ
@@ -153,6 +156,7 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         // バーコードがなければ読み取り結果を3秒後に非表示にする
         if (result.classList.contains('shown') && !hideTimer) {
           hideTimer = setTimeout(() => {
+            // ただし停止中なら消さない
             if (!qrcodereader__video.paused) {
               result.classList.remove('shown');
             }
