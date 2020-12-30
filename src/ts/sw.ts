@@ -8,7 +8,7 @@ ctx.addEventListener('install', event => {
         '../',
         '../index.html',
         '../js/main.js',
-        '../css/style.css',
+        '../css/main.css',
         '../js/sw.js',
       ]);
     })()
