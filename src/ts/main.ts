@@ -124,6 +124,10 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
   // 再開ボタンが押されたとき
   result__resume.addEventListener('click', () => {
     result.classList.remove('shown', 'stopped');
+    // 再開時には今までの結果をクリア
+    while (result__list.firstChild) {
+      result__list.removeChild(result__list.firstChild);
+    }
     qrcodereader__video.play();
   });
 
