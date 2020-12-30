@@ -65,10 +65,13 @@ function forEvent(
   name: string
 ): Promise<EventTarget | null> {
   return new Promise<EventTarget | null>(resolve => {
-    target.addEventListener(name, function handler(ev) {
-      target.removeEventListener(name, handler);
-      resolve(ev.target);
-    });
+    target.addEventListener(
+      name,
+      function handler(ev: {target: EventTarget | null}) {
+        target.removeEventListener(name, handler);
+        resolve(ev.target);
+      }
+    );
   });
 }
 
