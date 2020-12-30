@@ -172,10 +172,8 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
       }
       // 今回の読み取り結果を反映
       for (const barcode of barcodes) {
-        const value = barcode.rawValue;
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(value));
-        li.setAttribute('data-text', value);
+        li.appendChild(document.createTextNode(barcode.rawValue));
         result__list.appendChild(li);
       }
       // 読み取り結果を表示
