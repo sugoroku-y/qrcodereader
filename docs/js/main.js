@@ -122,3 +122,15 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         errormessage.textContent = String(e);
     }
 })();
+// サービスワーカーの用意
+if ('serviceWorker' in navigator) {
+    (async () => {
+        try {
+            const regist = await navigator.serviceWorker.register('js/sw.js');
+            console.log(`ServiceWorker registration success(scope: ${regist.scope})`);
+        }
+        catch (err) {
+            console.log(`ServiceWorker registration failure(${err})`);
+        }
+    })();
+}
