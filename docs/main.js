@@ -126,7 +126,7 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 if ('serviceWorker' in navigator) {
     (async () => {
         try {
-            const regist = await navigator.serviceWorker.register('js/sw.js');
+            const regist = await navigator.serviceWorker.register('sw.js');
             console.log(`ServiceWorker registration success(scope: ${regist.scope})`);
         }
         catch (err) {
