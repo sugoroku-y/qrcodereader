@@ -161,6 +161,10 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
           hideTimer = setTimeout(() => {
             // ただし停止中なら消さない
             if (!qrcodereader__video.paused) {
+              // 読み取れなかったら今までの結果をクリア
+              while (result__list.firstChild) {
+                result__list.removeChild(result__list.firstChild);
+              }
               result.classList.remove('shown');
             }
             hideTimer = 0;
@@ -175,14 +179,17 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         clearTimeout(hideTimer);
         hideTimer = 0;
       }
-      // 一旦前回の読み取り結果を削除
-      while (result__list.firstChild) {
-        result__list.removeChild(result__list.firstChild);
-      }
       // 今回の読み取り結果を反映
-      for (const barcode of barcodes) {
+      LOOP: for (const barcode of barcodes) {
+        const text = barcode.rawValue;
+        // 既に読み取った結果の中にあれば何もしない
+        for (const li of result__list.children) {
+          if (li.textContent === text) {
+            continue LOOP;
+          }
+        }
         const li = document.createElement('li');
-        li.appendChild(document.createTextNode(barcode.rawValue));
+        li.appendChild(document.createTextNode(text));
         result__list.appendChild(li);
       }
       // 読み取り結果を表示
