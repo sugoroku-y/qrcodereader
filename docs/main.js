@@ -15,7 +15,6 @@ function forEvent(target, name) {
 function timeout(elapsis) {
     return new Promise(resolve => setTimeout(resolve, elapsis));
 }
-const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 (async () => {
     await forEvent(window, 'DOMContentLoaded');
     // navigator.mediaDevicesがなければエラー
@@ -47,19 +46,18 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
         (_a = window
             .getSelection()) === null || _a === void 0 ? void 0 : _a.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
     });
-    // 停止ボタンが押されたとき
-    result__stop.addEventListener('click', () => {
-        result.classList.add('stopped');
-        qrcodereader__video.pause();
-    });
-    // 再開ボタンが押されたとき
-    result__resume.addEventListener('click', () => {
-        result.classList.remove('shown', 'stopped');
-        // 再開時には今までの結果をクリア
-        while (result__list.firstChild) {
-            result__list.removeChild(result__list.firstChild);
+    // 読み取り結果ダイアログがクリックされたとき
+    result.addEventListener('click', () => {
+        if (result.classList.toggle('stopped')) {
+            qrcodereader__video.pause();
         }
-        qrcodereader__video.play();
+        else {
+            // 再開時には今までの結果をクリア
+            while (result__list.firstChild) {
+                result__list.removeChild(result__list.firstChild);
+            }
+            qrcodereader__video.play();
+        }
     });
     try {
         // カメラからのストリームを取得してvideoに接続

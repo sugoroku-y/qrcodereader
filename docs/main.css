@@ -1,3 +1,4 @@
+@charset "UTF-8";
 html,
 body {
   padding: 0;
@@ -31,18 +32,25 @@ video {
     flex-direction: column;
     align-items: flex-start;
     border-radius: 10px;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.5);
     color: black;
-    word-break: break-all;
-    opacity: .5; }
-  #result.stopped #result__stop {
-    display: none; }
-  #result__resume {
-    display: none; }
-    #result.stopped #result__resume {
-      display: block; }
-  #result__stop, #result__resume {
-    align-self: flex-end; }
+    word-break: break-all; }
+  #result::before {
+    content: '読み取り結果'; }
+  #result::after {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: none;
+    background-image: url(pin.svg);
+    background-repeat: no-repeat;
+    background-size: 32px;
+    width: 32px;
+    height: 32px; }
+  #result.stopped::after {
+    background-image: url(pinned.svg); }
   #result__list > li {
     user-select: all; }
 

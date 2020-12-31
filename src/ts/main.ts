@@ -57,8 +57,6 @@ declare const errormessage: HTMLDivElement;
 declare const qrcodereader__video: HTMLVideoElement;
 declare const result: HTMLDivElement;
 declare const result__list: HTMLUListElement;
-declare const result__stop: HTMLButtonElement;
-declare const result__resume: HTMLButtonElement;
 
 function forEvent(
   target: EventTarget,
@@ -78,8 +76,6 @@ function forEvent(
 function timeout(elapsis: number): Promise<void> {
   return new Promise<void>(resolve => setTimeout(resolve, elapsis));
 }
-
-const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
 
 (async () => {
   await forEvent(window, 'DOMContentLoaded');
@@ -116,19 +112,17 @@ const colors = ['red', 'blue', 'green', 'yellow', 'cyan', 'magenta'];
       .getSelection()
       ?.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
   });
-  // 停止ボタンが押されたとき
-  result__stop.addEventListener('click', () => {
-    result.classList.add('stopped');
-    qrcodereader__video.pause();
-  });
-  // 再開ボタンが押されたとき
-  result__resume.addEventListener('click', () => {
-    result.classList.remove('shown', 'stopped');
-    // 再開時には今までの結果をクリア
-    while (result__list.firstChild) {
-      result__list.removeChild(result__list.firstChild);
+  // 読み取り結果ダイアログがクリックされたとき
+  result.addEventListener('click', () => {
+    if (result.classList.toggle('stopped')) {
+      qrcodereader__video.pause();
+    } else {
+      // 再開時には今までの結果をクリア
+      while (result__list.firstChild) {
+        result__list.removeChild(result__list.firstChild);
+      }
+      qrcodereader__video.play();
     }
-    qrcodereader__video.play();
   });
 
   try {
