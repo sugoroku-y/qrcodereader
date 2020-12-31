@@ -60,16 +60,28 @@ declare const result__list: HTMLUListElement;
 
 function forEvent(
   target: EventTarget,
-  name: string
+  name: string,
+  cancel?: string
 ): Promise<EventTarget | null> {
-  return new Promise<EventTarget | null>(resolve => {
-    target.addEventListener(
-      name,
-      function handler(ev: {target: EventTarget | null}) {
-        target.removeEventListener(name, handler);
-        resolve(ev.target);
+  return new Promise<EventTarget | null>((resolve, reject) => {
+    function handler(ev: {target: EventTarget | null}) {
+      removeHandler();
+      resolve(ev.target);
+    }
+    function cancelhandler() {
+      removeHandler();
+      reject(cancel);
+    }
+    function removeHandler() {
+      target.removeEventListener(name, handler);
+      if (cancel) {
+        target.removeEventListener(cancel, cancelhandler);
       }
-    );
+    }
+    target.addEventListener(name, handler);
+    if (cancel) {
+      target.addEventListener(cancel, cancelhandler);
+    }
   });
 }
 
@@ -81,12 +93,18 @@ async function hideResult() {
   // ゆっくりと結果を非表示にする
   result.style.transition = '3s';
   result.style.opacity = '0';
-  await forEvent(result, 'transitionend');
-  // 完全に消えたら表示用クラスを外す
-  result.classList.remove('shown');
-  // アニメーション用スタイルを解除
-  result.style.transition = '';
-  result.style.opacity = '';
+  try {
+    await forEvent(result, 'transitionend', 'transitioncancel');
+    // 完全に消えたら表示用クラスを外す
+    result.classList.remove('shown');
+  } catch (ex) {
+    // アニメーション途中でキャンセルされたら非表示にしない
+    return;
+  } finally {
+    // アニメーション用スタイルを解除
+    result.style.transition = '';
+    result.style.opacity = '';
+  }
   // 次回表示のために今までの結果をクリア
   while (result__list.firstChild) {
     result__list.removeChild(result__list.firstChild);
@@ -130,6 +148,11 @@ async function hideResult() {
   });
   // 読み取り結果ダイアログがクリックされたとき
   result.addEventListener('click', async () => {
+    if (result.style.transition) {
+      // アニメーションの途中ならキャンセル
+      result.style.transition = '';
+      return;
+    }
     if (result.classList.toggle('stopped')) {
       qrcodereader__video.pause();
     } else {
@@ -202,6 +225,7 @@ async function hideResult() {
       }
       // 読み取り結果を表示
       result.classList.add('shown');
+      result.style.transition = '';
     }
   } catch (e) {
     errormessage.textContent = String(e);
