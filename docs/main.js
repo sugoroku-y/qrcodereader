@@ -47,13 +47,18 @@ function timeout(elapsis) {
             .getSelection()) === null || _a === void 0 ? void 0 : _a.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
     });
     // 読み取り結果ダイアログがクリックされたとき
-    result.addEventListener('click', () => {
+    result.addEventListener('click', async () => {
         if (result.classList.toggle('stopped')) {
             qrcodereader__video.pause();
         }
         else {
             // 再開したら結果を非表示に
+            result.style.transition = '3s';
+            result.style.opacity = '0';
+            await forEvent(result, 'transitionend');
             result.classList.remove('shown');
+            result.style.transition = '';
+            result.style.opacity = '';
             // 再開時には今までの結果をクリア
             while (result__list.firstChild) {
                 result__list.removeChild(result__list.firstChild);
@@ -91,14 +96,19 @@ function timeout(elapsis) {
             if (!barcodes.length) {
                 // バーコードがなければ読み取り結果を3秒後に非表示にする
                 if (result.classList.contains('shown') && !hideTimer) {
-                    hideTimer = setTimeout(() => {
+                    hideTimer = setTimeout(async () => {
                         // ただし停止中なら消さない
                         if (!qrcodereader__video.paused) {
                             // 読み取れなかったら今までの結果をクリア
                             while (result__list.firstChild) {
                                 result__list.removeChild(result__list.firstChild);
                             }
+                            result.style.transition = '3s';
+                            result.style.opacity = '0';
+                            await forEvent(result, 'transitionend');
                             result.classList.remove('shown');
+                            result.style.transition = '';
+                            result.style.opacity = '';
                         }
                         hideTimer = 0;
                     }, 3000);
