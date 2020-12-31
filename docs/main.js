@@ -88,7 +88,6 @@ async function hideResult() {
         if (result.style.transition) {
             // アニメーションの途中ならキャンセル
             result.style.transition = '';
-            return;
         }
         if (result.classList.toggle('stopped')) {
             qrcodereader__video.pause();
