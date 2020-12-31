@@ -52,6 +52,8 @@ function timeout(elapsis) {
             qrcodereader__video.pause();
         }
         else {
+            // 再開したら結果を非表示に
+            result.classList.remove('shown');
             // 再開時には今までの結果をクリア
             while (result__list.firstChild) {
                 result__list.removeChild(result__list.firstChild);
