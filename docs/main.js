@@ -89,17 +89,19 @@ async function hideResult() {
         if (result.style.transition) {
             // アニメーションの途中ならキャンセル
             result.style.transition = '';
-            if (hideTimer) {
-                clearTimeout(hideTimer);
-            }
         }
-        if (result.classList.toggle('stopped')) {
-            qrcodereader__video.pause();
+        if (hideTimer) {
+            clearTimeout(hideTimer);
         }
-        else {
+        if (qrcodereader__video.paused) {
+            result.classList.remove('stopped');
             // 再開したら結果を非表示に
             await hideResult();
             qrcodereader__video.play();
+        }
+        else {
+            result.classList.add('stopped');
+            qrcodereader__video.pause();
         }
     });
     try {
