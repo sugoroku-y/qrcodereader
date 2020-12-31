@@ -77,6 +77,22 @@ function timeout(elapsis: number): Promise<void> {
   return new Promise<void>(resolve => setTimeout(resolve, elapsis));
 }
 
+async function hideResult() {
+  // ゆっくりと結果を非表示にする
+  result.style.transition = '3s';
+  result.style.opacity = '0';
+  await forEvent(result, 'transitionend');
+  // 完全に消えたら表示用クラスを外す
+  result.classList.remove('shown');
+  // アニメーション用スタイルを解除
+  result.style.transition = '';
+  result.style.opacity = '';
+  // 次回表示のために今までの結果をクリア
+  while (result__list.firstChild) {
+    result__list.removeChild(result__list.firstChild);
+  }
+}
+
 (async () => {
   await forEvent(window, 'DOMContentLoaded');
 
@@ -118,16 +134,7 @@ function timeout(elapsis: number): Promise<void> {
       qrcodereader__video.pause();
     } else {
       // 再開したら結果を非表示に
-      result.style.transition = '3s';
-      result.style.opacity = '0';
-      await forEvent(result, 'transitionend');
-      result.classList.remove('shown');
-      result.style.transition = '';
-      result.style.opacity = '';
-      // 再開時には今までの結果をクリア
-      while (result__list.firstChild) {
-        result__list.removeChild(result__list.firstChild);
-      }
+      await hideResult();
       qrcodereader__video.play();
     }
   });
@@ -166,16 +173,7 @@ function timeout(elapsis: number): Promise<void> {
           hideTimer = setTimeout(async () => {
             // ただし停止中なら消さない
             if (!qrcodereader__video.paused) {
-              // 読み取れなかったら今までの結果をクリア
-              while (result__list.firstChild) {
-                result__list.removeChild(result__list.firstChild);
-              }
-              result.style.transition = '3s';
-              result.style.opacity = '0';
-              await forEvent(result, 'transitionend');
-              result.classList.remove('shown');
-              result.style.transition = '';
-              result.style.opacity = '';
+              await hideResult();
             }
             hideTimer = 0;
           }, 3000);
