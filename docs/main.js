@@ -83,11 +83,15 @@ async function hideResult() {
         (_a = window
             .getSelection()) === null || _a === void 0 ? void 0 : _a.setBaseAndExtent(textNode, 0, textNode, textNode.data.length);
     });
+    let hideTimer = 0;
     // 読み取り結果ダイアログがクリックされたとき
     result.addEventListener('click', async () => {
         if (result.style.transition) {
             // アニメーションの途中ならキャンセル
             result.style.transition = '';
+            if (hideTimer) {
+                clearTimeout(hideTimer);
+            }
         }
         if (result.classList.toggle('stopped')) {
             qrcodereader__video.pause();
@@ -114,7 +118,6 @@ async function hideResult() {
         await qrcodereader__video.play();
         // バーコード読み取り機能の準備
         const barcodeDetector = new BarcodeDetector();
-        let hideTimer = 0;
         while (true) {
             // 停止中なら再開されるまで待つ
             if (qrcodereader__video.paused) {
@@ -129,11 +132,11 @@ async function hideResult() {
                 // バーコードがなければ読み取り結果を3秒後に非表示にする
                 if (result.classList.contains('shown') && !hideTimer) {
                     hideTimer = setTimeout(async () => {
+                        hideTimer = 0;
                         // ただし停止中なら消さない
                         if (!qrcodereader__video.paused) {
                             await hideResult();
                         }
-                        hideTimer = 0;
                     }, 3000);
                 }
                 // 0.2秒待機してもう一度
