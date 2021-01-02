@@ -89,7 +89,7 @@ function timeout(elapsis: number): Promise<void> {
   return new Promise<void>(resolve => setTimeout(resolve, elapsis));
 }
 
-async function hideResult() {
+async function hideResult(): Promise<boolean> {
   // ゆっくりと結果を非表示にする
   result.style.transition = '3s';
   result.style.opacity = '0';
@@ -99,7 +99,7 @@ async function hideResult() {
     result.classList.remove('shown');
   } catch (ex) {
     // アニメーション途中でキャンセルされたら非表示にしない
-    return;
+    return false;
   } finally {
     // アニメーション用スタイルを解除
     result.style.transition = '';
@@ -109,6 +109,7 @@ async function hideResult() {
   while (result__list.firstChild) {
     result__list.removeChild(result__list.firstChild);
   }
+  return true;;
 }
 
 (async () => {
@@ -160,8 +161,9 @@ async function hideResult() {
     if (qrcodereader__video.paused) {
       result.classList.remove('stopped');
       // 再開したら結果を非表示に
-      await hideResult();
-      qrcodereader__video.play();
+      if (await hideResult()) {
+        await qrcodereader__video.play();
+      }
     } else {
       result.classList.add('stopped');
       qrcodereader__video.pause();

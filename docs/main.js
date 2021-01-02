@@ -40,7 +40,7 @@ async function hideResult() {
     }
     catch (ex) {
         // アニメーション途中でキャンセルされたら非表示にしない
-        return;
+        return false;
     }
     finally {
         // アニメーション用スタイルを解除
@@ -51,6 +51,8 @@ async function hideResult() {
     while (result__list.firstChild) {
         result__list.removeChild(result__list.firstChild);
     }
+    return true;
+    ;
 }
 (async () => {
     await forEvent(window, 'DOMContentLoaded');
@@ -96,8 +98,9 @@ async function hideResult() {
         if (qrcodereader__video.paused) {
             result.classList.remove('stopped');
             // 再開したら結果を非表示に
-            await hideResult();
-            qrcodereader__video.play();
+            if (await hideResult()) {
+                await qrcodereader__video.play();
+            }
         }
         else {
             result.classList.add('stopped');
